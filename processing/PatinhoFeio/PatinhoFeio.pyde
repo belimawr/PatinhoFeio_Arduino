@@ -70,7 +70,7 @@ def transbordo(val):
     LED(13, 436, 170, SMALL_LED, RED, val)
 
 def parado(val):
-    LED(13, 340, 378, BIG_LED, WHITE, val)
+    LED(14, 340, 378, BIG_LED, WHITE, val)
 
 def externo(val):
     LED(15, 401, 378, BIG_LED, WHITE, val)
@@ -153,7 +153,7 @@ def modo(val):
     i = 71
     s = 19
     inc = 58
-    for a, b in enumerate(range(5, -1, -1)):
+    for a, b in enumerate(range(6)):
         leds[i+a] = ((val & (1 << a)) == (1 << a))
         if leds[i+a]:
             green_ON()
