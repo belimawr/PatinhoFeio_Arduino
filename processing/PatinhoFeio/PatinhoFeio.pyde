@@ -1,6 +1,16 @@
 # (c) 2017 Tiago Queiroz <https://github.com/belimawr>
 # (c) 2017 Felipe Correa da Silva Sanches <juca@members.fsf.org>
 # Licensed under the GNU General Public License, version 2 (or later)
+
+# Buttons commands
+# 8-bit codes, hexadecimal
+# 0x10 ~ 0x1F -> Panel data
+# 0x30 ~ 0x3F -> Mode
+# 0x40 -> Espera
+# 0x41 -> Interrupcao
+# 0x42 -> Preparacao
+# 0x43 -> Partida
+
 add_library('serial')
 import math
 
@@ -58,8 +68,8 @@ class Button(Led):
 
   def _send_pressed(self):
     global myPort
-    myPort.write("I:" + self._cmd)
-    print("I:" + self._cmd)
+    myPort.write("I:")
+    myPort(self._cmd)
 
   def __repr__(self):
     return str(self._x) + ' ' + str(self._y)
@@ -242,29 +252,34 @@ def setup():
                          y,
                          19,
                          GREEN_ON,
-                         "MODO:" + str(i),
+                         0x40 + i,
       ))
 
     # espera
     x, y = 525, 566
-    leds.append(Button(x, y, 19, GREEN_ON, "ESPERA"))
+    leds.append(Button(x, y, 19, GREEN_ON, 0x40))
 
     # interrupcao
     x, y = 584, 566
-    leds.append(Button(x, y, 19, GREEN_ON, "INTERRUPCAO"))
+    leds.append(Button(x, y, 19, GREEN_ON, 0x41))
 
     # preparacao
     x, y = 640, 620
-    leds.append(Button(x, y, 19, GREEN_ON, "PREPARACAO"))
+    leds.append(Button(x, y, 19, GREEN_ON, 0x42))
 
     # Buttons
     # Painel
     for i in range(12):
       x, y = 109, 474
-      buttons.append(Button(x + BIG_INC * i, y, BIG_LED, RED_ON, "PAINEL:" + str(i)))
+      buttons.append(Button(x + BIG_INC * i,
+                            y,
+                            BIG_LED,
+                            RED_ON,
+                            0x10 + i,
+      ))
 
     # Partida
-    buttons.append(Partida(628, 556, 18, (255, 255, 255), "PARTIDA"))
+    buttons.append(Partida(628, 556, 18, (255, 255, 255), 0x43))
 
     # Other buttons
     for led in leds:
@@ -283,7 +298,6 @@ def setup():
     
     pato = loadImage("pato.png")
     image(pato, 0, 0)
-    # frameRate(5)
 
 def mouseClicked():
     for b in buttons:
@@ -311,7 +325,7 @@ def serialEvent(evt):
         if len(split) == 2:
             print 'Teletype: ', split[1].strip()
     else:
-      print("Unknown: ", data)
+      print("Unknown: " + data)
 
 
 def binary_str_to_int(lst):
