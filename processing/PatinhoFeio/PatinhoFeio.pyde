@@ -46,11 +46,25 @@ class Button(Led):
 
     if d <= self._size/2.0:
       self._state = not self._state
+      self._send_pressed()
 
-    return
+    return self._state
+
+  def _send_pressed(self):
+    pass
 
   def __repr__(self):
     return str(self._x) + ' ' + str(self._y)
+
+
+class Partida(Button):
+  def draw(self):
+      fill(*self._colour)
+      rect(self._x, self._y, 24, 19)
+
+  def clicked(self, x, y):
+    if ((x >= self._x) and (x <= self._x + 24)) and ((y >= self._y) and (y <= self._y + 19)):
+      self._send_pressed()
 
 def dados_painel(val):
     global leds
@@ -211,31 +225,41 @@ def setup():
     for i in range(7):
       leds.append(Led(0, 0, 0, GREEN_ON))
 
-      # modo
+    # modo
     x, y = 79, 566
     inc = 58
     for i in range(6):
-      leds.append(Led(x + inc * i,
-                      y,
-                      19,
-                      GREEN_ON,
+      leds.append(Button(x + inc * i,
+                         y,
+                         19,
+                         GREEN_ON,
       ))
 
     # espera
     x, y = 525, 566
-    leds.append(Led(x, y, 19, GREEN_ON))
+    leds.append(Button(x, y, 19, GREEN_ON))
 
     # interrupcao
     x, y = 584, 566
-    leds.append(Led(x, y, 19, GREEN_ON))
+    leds.append(Button(x, y, 19, GREEN_ON))
 
     # preparacao
     x, y = 640, 620
-    leds.append(Led(x, y, 19, GREEN_ON))
+    leds.append(Button(x, y, 19, GREEN_ON))
 
+    # Buttons
+    # Painel
     for i in range(12):
       x, y = 109, 474
       buttons.append(Button(x + BIG_INC * i, y, BIG_LED, RED_ON))
+
+    # Partida
+    buttons.append(Partida(628, 556, 18, (255, 255, 255)))
+
+    # Other buttons
+    for led in leds:
+      if isinstance(led, Button):
+        buttons.append(led)
 
     #noStroke()
     size(729, 665)
