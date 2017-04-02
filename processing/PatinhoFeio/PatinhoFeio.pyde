@@ -2,6 +2,7 @@
 # (c) 2017 Felipe Correa da Silva Sanches <juca@members.fsf.org>
 # Licensed under the GNU General Public License, version 2 (or later)
 add_library('serial')
+import math
 
 SMALL_LED = 8
 SMALL_INC = 15
@@ -38,9 +39,18 @@ class Led():
     self._state = value
     self.draw()
 
+
 class Button(Led):
-  def cliked(self, x, y):
-    raise NotImplementedError()
+  def clicked(self, x, y):
+    d = math.sqrt((self._x - x)**2 + (self._y - y)**2)
+
+    if d <= self._size/2.0:
+      self._state = not self._state
+
+    return
+
+  def __repr__(self):
+    return str(self._x) + ' ' + str(self._y)
 
 def dados_painel(val):
     global leds
@@ -236,7 +246,11 @@ def setup():
     
     pato = loadImage("pato.png")
     image(pato, 0, 0)
-    frameRate(5)
+    # frameRate(5)
+
+def mouseClicked():
+    for b in buttons:
+      b.clicked(mouseX, mouseY)
 
 def draw():
     global buff
