@@ -209,17 +209,12 @@ def setup():
     image(pato, 0, 0)
     frameRate(5)
 
-
 def draw():
     global buff
-    if len(buff) == 20:
-        status = [True] * 80
-        for i in xrange(80):
-            status[i] = (int(buff[i/4], 16) & (1 << i%4) != 0)
-        update_panel(status)
+    if len(buff) == 80:
+        update_panel(buff)
     else:
         print ('There is not enough data to update panel. len={}'.format(len(buff)))
-    
     
 def serialEvent(evt):
     global buff
