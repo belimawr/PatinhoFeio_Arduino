@@ -9,197 +9,226 @@ SMALL_INC = 15
 BIG_LED = 12
 BIG_INC = 46
 
+RED_ON = (255, 0, 0)
+
+GREEN_ON =(0, 255, 0)
+
+WHITE_ON = (255, 255, 255)
+
 buff = []
 leds = []
+buttons = []
 
-def red_ON():
-  fill(255, 0, 0)
+class Led():
+  def __init__(self, x, y, size, colour):
+    self._x = x
+    self._y = y
+    self._size = size
+    self._colour = colour
+    self._state  = False
 
-def red_OFF():
-  fill(128, 0, 0)
+  def draw(self):
+    if self._state == True:
+      fill(*self._colour)
+    else:
+      fill(*map(lambda x: x/2, self._colour))
+    ellipse(self._x , self._y, self._size, self._size)
 
-def green_ON():
-  fill(0, 255, 0)
+  def set_value(self, value):
+    self._state = value
+    self.draw()
 
-def green_OFF():
-  fill(0, 128, 0)
-
-def white_ON():
-  fill(255, 255, 255)
-
-def white_OFF():
-  fill(128, 128, 128)
-
-RED = [red_ON, red_OFF]
-GREEN = [green_ON, green_OFF]
-WHITE = [white_ON, white_OFF]
+class Button(Led):
+  def cliked(self, x, y):
+    raise NotImplementedError()
 
 def dados_painel(val):
     global leds
-    base_x, base_y = 109, 474
     i = 0
     for a, b in enumerate(range(11, -1, -1)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + BIG_INC*b, base_y, BIG_LED, BIG_LED)
-        
-    base_x, base_y = 434, 277
-    for a, b in enumerate(range(11, -1, -1)):
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + SMALL_INC*b, base_y, SMALL_LED, SMALL_LED)
-
-
-def LED(led_id, base_x, base_y, led_size, ON_OFF_callbacks, val):
-    leds[led_id] = True if val == 1 else False
-    if leds[led_id]:
-        ON_OFF_callbacks[0]()
-    else:
-        ON_OFF_callbacks[1]()
-    ellipse(base_x , base_y, led_size, led_size)
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i + b].set_value(bool_value)
 
 def vai_um(val):
-    LED(12, 600, 170, SMALL_LED, RED, val)
+    leds[12].set_value(val)
 
 def transbordo(val):
-    LED(13, 436, 170, SMALL_LED, RED, val)
+    leds[13].set_value(val)
 
 def parado(val):
-    LED(14, 340, 378, BIG_LED, WHITE, val)
+    leds[14].set_value(val)
 
 def externo(val):
-    LED(15, 401, 378, BIG_LED, WHITE, val)
+    leds[15].set_value(val)
 
 #ci -> Endreço de Instrução
 def ci(val):
     global leds
-    base_x, base_y = 434, 121
     i = 16
     for a, b in enumerate(range(11, -1, -1)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + SMALL_INC*b, base_y, SMALL_LED, SMALL_LED)
-
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i+b].set_value(bool_value)
 
 # re -> Endereço na Memória
 def re(val):
     global leds
-    base_x, base_y = 434, 57
     i = 28
     for a, b in enumerate(range(11, -1, -1)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + SMALL_INC*b, base_y, SMALL_LED, SMALL_LED)
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i+b].set_value(bool_value)
 
 
 # rd -> Dados da Memória
 def rd(val):
     global leds
-    base_x, base_y = 146, 250
     i = 40
     for a, b in enumerate(range(7, -1, -1)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + SMALL_INC*b, base_y, SMALL_LED, SMALL_LED)
-
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i+a].set_value(bool_value)
 
 # ri -> Código de Instrução
 def ri(val):
     global leds
-    base_x, base_y = 146, 185
     i = 48
     for a, b in enumerate(range(7, -1, -1)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + SMALL_INC*b, base_y, SMALL_LED, SMALL_LED)
-
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i+a].set_value(bool_value)
 
 # acc -> Acumulador
 def acc(val):
     global leds
-    base_x, base_y = 146, 120
     i = 56
     for a, b in enumerate(range(7, -1, -1)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            red_ON()
-        else:
-            red_OFF()
-        ellipse(base_x + SMALL_INC*b, base_y, SMALL_LED, SMALL_LED)
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i+a].set_value(bool_value)
 
 # TODO: FASE
 
-
 def modo(val):
     global leds
-    base_x, base_y = 79, 566
     i = 71
-    s = 19
-    inc = 58
-    for a, b in enumerate(range(6)):
-        leds[i+a] = ((val & (1 << a)) == (1 << a))
-        if leds[i+a]:
-            green_ON()
-        else:
-            green_OFF()
-        ellipse(base_x + inc*b, base_y, s, s)
-
+    for a in range(6):
+        bool_value = ((val & (1 << a)) == (1 << a))
+        leds[i+a].set_value(bool_value)
 
 def espera(val):
-    base_x, base_y = 525, 566
-    s = 19
-    leds[13] = True if val == 1 else False
-    if leds[13]:
-        green_ON()
-    else:
-        green_OFF()
-    ellipse(base_x , base_y, s, s)
-
+    leds[77].set_value(val)
 
 def interrupcao(val):
-    base_x, base_y = 584, 566
-    s = 19
-    leds[13] = True if val == 1 else False
-    if leds[13]:
-        green_ON()
-    else:
-        green_OFF()
-    ellipse(base_x , base_y, s, s)
-
+    leds[78].set_value(val)
 
 def preparacao(val):
-    base_x, base_y = 584+56, 620
-    s = 19
-    leds[13] = True if val == 1 else False
-    if leds[13]:
-        green_ON()
-    else:
-        green_OFF()
-    ellipse(base_x , base_y, s, s)
-
+    leds[79].set_value(val)
 
 def setup():
+    # dados_painel - 1
+    x, y = 434, 277
+    inc = SMALL_INC
+    for i in range(12):
+      leds.append(Led(x + inc * i,
+                      y,
+                      SMALL_LED,
+                      RED_ON,
+      ))
+
+      # vai_um
+    x, y = 600, 170
+    leds.append(Led(x, y, SMALL_LED, RED_ON))
+
+    # transbordo
+    x, y = 436, 170
+    leds.append(Led(x, y, SMALL_LED, RED_ON))
+
+    # parado
+    x, y = 340, 378
+    leds.append(Led(x, y, BIG_LED, WHITE_ON))
+
+    # externo
+    x, y = 401, 378
+    leds.append(Led(x, y, BIG_LED, WHITE_ON))
+
+    # ci -> Endreço de Instrução
+    x, y = 434, 121
+    inc = SMALL_INC
+    for i in range(12):
+      leds.append(Led(x + inc * i,
+                      y,
+                      SMALL_LED,
+                      RED_ON,
+      ))
+
+    # re -> Endereço na Memória
+    x, y = 434, 57
+    inc = SMALL_INC
+    for i in range(12):
+      leds.append(Led(x + inc * i,
+                      y,
+                      SMALL_LED,
+                      RED_ON,
+      ))
+
+    # rd -> Dados da Memória
+    x, y = 146, 250
+    inc = SMALL_INC
+    for i in range(8):
+      leds.append(Led(x + inc * i,
+                      y,
+                      SMALL_LED,
+                      RED_ON,
+      ))
+
+    # ri -> Código de Instrução
+    x, y = 146, 185
+    inc = SMALL_INC
+    for i in range(8):
+      leds.append(Led(x + inc * i,
+                      y,
+                      SMALL_LED,
+                      RED_ON,
+      ))
+
+    # acc -> Acumulador
+    x, y = 146, 120
+    inc = SMALL_INC
+    for i in range(8):
+      leds.append(Led(x + inc * i,
+                      y,
+                      SMALL_LED,
+                      RED_ON,
+      ))
+
+    # TODO: FASE
+    for i in range(7):
+      leds.append(Led(0, 0, 0, GREEN_ON))
+
+      # modo
+    x, y = 79, 566
+    inc = 58
+    for i in range(6):
+      leds.append(Led(x + inc * i,
+                      y,
+                      19,
+                      GREEN_ON,
+      ))
+
+    # espera
+    x, y = 525, 566
+    leds.append(Led(x, y, 19, GREEN_ON))
+
+    # interrupcao
+    x, y = 584, 566
+    leds.append(Led(x, y, 19, GREEN_ON))
+
+    # preparacao
+    x, y = 640, 620
+    leds.append(Led(x, y, 19, GREEN_ON))
+
+    for i in range(12):
+      x, y = 109, 474
+      buttons.append(Button(x + BIG_INC * i, y, BIG_LED, RED_ON))
+
     #noStroke()
     size(729, 665)
-    for i in range(80):
-        leds.append(False)
     dados_painel(11)
     portName = '/dev/ttyACM0'
     myPort = Serial(this, portName, 115200)
@@ -211,6 +240,9 @@ def setup():
 
 def draw():
     global buff
+    for b in buttons:
+      b.draw()
+
     if len(buff) == 80:
         update_panel(buff)
     else:
