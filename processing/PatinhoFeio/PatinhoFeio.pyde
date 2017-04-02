@@ -20,7 +20,9 @@ buff = []
 leds = []
 buttons = []
 
-class Led():
+myPort = None
+
+class Led(object):
   def __init__(self, x, y, size, colour):
     self._x = x
     self._y = y
@@ -41,6 +43,10 @@ class Led():
 
 
 class Button(Led):
+  def __init__(self, x, y, size, colour, cmd):
+    super(Button, self).__init__(x, y, size, colour)
+    self._cmd = cmd
+
   def clicked(self, x, y):
     d = math.sqrt((self._x - x)**2 + (self._y - y)**2)
 
@@ -51,7 +57,9 @@ class Button(Led):
     return self._state
 
   def _send_pressed(self):
-    pass
+    global myPort
+    myPort.write("I:" + self._cmd)
+    print("I:" + self._cmd)
 
   def __repr__(self):
     return str(self._x) + ' ' + str(self._y)
@@ -145,6 +153,7 @@ def preparacao(val):
     leds[79].set_value(val)
 
 def setup():
+    global myPort
     # dados_painel - 1
     x, y = 434, 277
     inc = SMALL_INC
@@ -233,28 +242,29 @@ def setup():
                          y,
                          19,
                          GREEN_ON,
+                         "MODO:" + str(i),
       ))
 
     # espera
     x, y = 525, 566
-    leds.append(Button(x, y, 19, GREEN_ON))
+    leds.append(Button(x, y, 19, GREEN_ON, "ESPERA"))
 
     # interrupcao
     x, y = 584, 566
-    leds.append(Button(x, y, 19, GREEN_ON))
+    leds.append(Button(x, y, 19, GREEN_ON, "INTERRUPCAO"))
 
     # preparacao
     x, y = 640, 620
-    leds.append(Button(x, y, 19, GREEN_ON))
+    leds.append(Button(x, y, 19, GREEN_ON, "PREPARACAO"))
 
     # Buttons
     # Painel
     for i in range(12):
       x, y = 109, 474
-      buttons.append(Button(x + BIG_INC * i, y, BIG_LED, RED_ON))
+      buttons.append(Button(x + BIG_INC * i, y, BIG_LED, RED_ON, "PAINEL:" + str(i)))
 
     # Partida
-    buttons.append(Partida(628, 556, 18, (255, 255, 255)))
+    buttons.append(Partida(628, 556, 18, (255, 255, 255), "PARTIDA"))
 
     # Other buttons
     for led in leds:
@@ -265,8 +275,11 @@ def setup():
     size(729, 665)
     dados_painel(11)
     portName = '/dev/ttyACM0'
-    myPort = Serial(this, portName, 115200)
-    myPort.bufferUntil(10)
+    try:
+      myPort = Serial(this, portName, 115200)
+      myPort.bufferUntil(10)
+    except:
+      pass
     
     pato = loadImage("pato.png")
     image(pato, 0, 0)
@@ -297,6 +310,8 @@ def serialEvent(evt):
         split = data.split(':')
         if len(split) == 2:
             print 'Teletype: ', split[1].strip()
+    else:
+      print("Unknown: ", data)
 
 
 def binary_str_to_int(lst):

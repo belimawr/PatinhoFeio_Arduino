@@ -944,7 +944,12 @@ void emulator_loop(){
 }
 
 void loop() {
-
+  if (Serial.available()) {
+	  char c = Serial.read();
+	  Serial.print('Char: ');
+	  Serial.write(c);
+	  Serial.write('\n');
+	}
 #if DEMO == 1
   //This is the most complete blinking demo
   // which blinks every LED in the panel:
